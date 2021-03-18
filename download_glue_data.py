@@ -24,8 +24,11 @@ import argparse
 import tempfile
 import urllib.request
 import zipfile
+import io
+URLLIB = urllib.request
 
 TASKS = ["CoLA", "SST", "MRPC", "QQP", "STS", "MNLI", "QNLI", "RTE", "WNLI", "diagnostic"]
+TASKS = [ "MRPC", "QQP", "STS", "MNLI", "QNLI", "RTE", "WNLI", "diagnostic"]
 TASK2PATH = {"CoLA":'https://dl.fbaipublicfiles.com/glue/data/CoLA.zip',
              "SST":'https://dl.fbaipublicfiles.com/glue/data/SST-2.zip',
              "QQP":'https://dl.fbaipublicfiles.com/glue/data/STS-B.zip',
@@ -33,6 +36,7 @@ TASK2PATH = {"CoLA":'https://dl.fbaipublicfiles.com/glue/data/CoLA.zip',
              "MNLI":'https://dl.fbaipublicfiles.com/glue/data/MNLI.zip',
              "QNLI":'https://dl.fbaipublicfiles.com/glue/data/QNLIv2.zip',
              "RTE":'https://dl.fbaipublicfiles.com/glue/data/RTE.zip',
+             'MRPC':'https://raw.githubusercontent.com/MegEngine/Models/master/official/nlp/bert/glue_data/MRPC/dev_ids.tsv',
              "WNLI":'https://dl.fbaipublicfiles.com/glue/data/WNLI.zip',
              "diagnostic":'https://dl.fbaipublicfiles.com/glue/data/AX.tsv'}
 
@@ -78,11 +82,11 @@ def format_mrpc(data_dir, path_to_data):
             label, id1, id2, s1, s2 = row.strip().split('\t')
             test_fh.write("%d\t%s\t%s\t%s\t%s\n" % (idx, id1, id2, s1, s2))
 
-    try:
-        URLLIB.urlretrieve(TASK2PATH["MRPC"], os.path.join(mrpc_dir, "dev_ids.tsv"))
-    except KeyError or urllib.error.HTTPError:
-        print("\tError downloading standard development IDs for MRPC. You will need to manually split your data.")
-        return
+#    try:
+#        URLLIB.urlretrieve(TASK2PATH["MRPC"], os.path.join(mrpc_dir, "dev_ids.tsv"))
+#    except KeyError or urllib.error.HTTPError or urllib.error.URLError:
+#        print("\tError downloading standard development IDs for MRPC. You will need to manually split your data.")
+#        return
 
     dev_ids = []
     with io.open(os.path.join(mrpc_dir, "dev_ids.tsv"), encoding='utf-8') as ids_fh:
